@@ -37,7 +37,7 @@ trait ReflectionHelperTrait
     public function getInaccessibleProperty($objectOrClassFqn, string $propertyName)
     {
         $info     = $this->processObjectOrClassFqn($objectOrClassFqn);
-        $property = $info->reflection->getProperty($propertyName);
+        $property = $this->getPropertyFromClassOrAncestors($info->reflection, $propertyName);
         $property->setAccessible(true);
         return $property->getValue($info->object);
     }
@@ -54,7 +54,7 @@ trait ReflectionHelperTrait
     public function setInaccessibleProperty($objectOrClassFqn, string $propertyName, $value): void
     {
         $info     = $this->processObjectOrClassFqn($objectOrClassFqn);
-        $property = $info->reflection->getProperty($propertyName);
+        $property = $this->getPropertyFromClassOrAncestors($info->reflection, $propertyName);
         $property->setAccessible(true);
         if ($info->object !== null) {
             // non-static property
@@ -88,5 +88,28 @@ trait ReflectionHelperTrait
         }
         $info->reflection = new ReflectionClass($info->className);
         return $info;
+    }
+
+    /**
+     * Retrieves the property from the $reflectionClass or its ancestors.
+     *
+     * @param \ReflectionClass $reflectionClass
+     * @param string           $propertyName
+     * @return \ReflectionProperty
+     * @throws \ReflectionException if the requested property is not found in $reflectionClass or its ancestors.
+     */
+    private function getPropertyFromClassOrAncestors(ReflectionClass $reflectionClass, string $propertyName): \ReflectionProperty
+    {
+        // assign to new variable to loosen type-check
+        $reflection = $reflectionClass;
+        while (!$reflection->hasProperty($propertyName)) {
+            $reflection = $reflection->getParentClass();
+            if ($reflection === false) {
+                throw new \ReflectionException(
+                    "Failed to find the property $propertyName in the class or any parent classes"
+                );
+            }
+        }
+        return $reflection->getProperty($propertyName);
     }
 }
