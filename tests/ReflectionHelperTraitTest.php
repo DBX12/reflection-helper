@@ -84,7 +84,6 @@ class ReflectionHelperTraitTest extends TestCase
     /**
      * @dataProvider dataProvider_getInaccessibleProperty
      * @covers       \dbx12\reflectionHelper\ReflectionHelperTrait::getInaccessibleProperty()
-     * @uses         \dbx12\reflectionHelper\ReflectionHelperTrait::getPropertyFromClassOrAncestors()
      * @uses         \dbx12\reflectionHelper\ReflectionHelperTrait::processObjectOrClassFqn()
      */
     public function testGetInaccessibleProperty($objectOrFqn, $propertyName, $expectedValue, $expectException): void
@@ -148,7 +147,6 @@ class ReflectionHelperTraitTest extends TestCase
     /**
      * @dataProvider dataProvider_setInaccessibleProperty
      * @covers       \dbx12\reflectionHelper\ReflectionHelperTrait::setInaccessibleProperty()
-     * @uses         \dbx12\reflectionHelper\ReflectionHelperTrait::getPropertyFromClassOrAncestors()
      * @uses         \dbx12\reflectionHelper\ReflectionHelperTrait::processObjectOrClassFqn()
      * @uses         \dbx12\reflectionHelper\ReflectionHelperTrait::getInaccessibleProperty()
      * @throws \Exception should random_int glitch out
@@ -239,74 +237,5 @@ class ReflectionHelperTraitTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $method->invokeArgs($dummy, [1]);
         $this->fail('Expected exception was not thrown');
-    }
-
-    /**
-     * @dataProvider dataProvider_getPropertyFromClassOrAncestors
-     * @covers       \dbx12\reflectionHelper\ReflectionHelperTrait::getPropertyFromClassOrAncestors()
-     * @param \ReflectionClass         $reflection
-     * @param string                   $propertyName
-     * @param \ReflectionProperty|null $expected
-     * @param bool                     $expectException
-     * @return void
-     * @throws \ReflectionException
-     */
-    public function testGetPropertyFromClassOrAncestors(ReflectionClass $reflection, string $propertyName, ?ReflectionProperty $expected, bool $expectException): void
-    {
-        $dummy  = new Dummy();
-        $ref    = new ReflectionClass($dummy);
-        $method = $ref->getMethod('getPropertyFromClassOrAncestors');
-        $method->setAccessible(true);
-
-        if ($expectException) {
-            $this->expectException(ReflectionException::class);
-        }
-        $actual = $method->invokeArgs($dummy, [$reflection, $propertyName]);
-        if ($expectException) {
-            $this->fail('Expected exception was not thrown');
-        }
-        $this->assertEquals($expected, $actual, 'Correct ReflectionProperty returned');
-    }
-
-    public function dataProvider_getPropertyFromClassOrAncestors(): array
-    {
-        return [
-            'class property on object'       => [
-                'reflection'      => new ReflectionClass(new TestSubject()),
-                'propertyName'    => 'protectedProperty',
-                'expected'        => new ReflectionProperty(TestSubject::class, 'protectedProperty'),
-                'expectException' => false,
-            ],
-            'parent property on object'      => [
-                'reflection'      => new ReflectionClass(new TestSubject()),
-                'propertyName'    => 'parentProperty',
-                'expected'        => new ReflectionProperty(TestSubject::class, 'parentProperty'),
-                'expectException' => false,
-            ],
-            'nonexistent property on object' => [
-                'reflection'      => new ReflectionClass(new TestSubject()),
-                'propertyName'    => 'unknown',
-                'expected'        => null,
-                'expectException' => true,
-            ],
-            'class property on fqn'          => [
-                'reflection'      => new ReflectionClass(TestSubject::class),
-                'propertyName'    => 'staticProtectedProperty',
-                'expected'        => new ReflectionProperty(TestSubject::class, 'staticProtectedProperty'),
-                'expectException' => false,
-            ],
-            'parent property on fqn'         => [
-                'reflection'      => new ReflectionClass(TestSubject::class),
-                'propertyName'    => 'staticParentProperty',
-                'expected'        => new ReflectionProperty(TestSubject::class, 'staticParentProperty'),
-                'expectException' => false,
-            ],
-            'nonexistent property on class'  => [
-                'reflection'      => new ReflectionClass(TestSubject::class),
-                'propertyName'    => 'unknown',
-                'expected'        => null,
-                'expectException' => true,
-            ],
-        ];
     }
 }
