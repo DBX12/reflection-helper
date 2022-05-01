@@ -1,0 +1,21 @@
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         forceCoversAnnotation="true"
+         beStrictAboutCoversAnnotation="true"
+>
+    <testsuite name="tests">
+        <directory>tests</directory>
+        <exclude>tests/support</exclude>
+    </testsuite>
+    <coverage
+            cacheDirectory="phpunitCache"
+            processUncoveredFiles="true"
+            pathCoverage="true"
+        >
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
+</phpunit>

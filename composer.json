@@ -1,0 +1,26 @@
+{
+    "name": "dbx12/reflection-helper",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DBX12",
+            "email": "dbx12@dbx12.de"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.3|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
+    "autoload": {
+        "psr-4": {
+            "dbx12\\reflectionHelper\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
