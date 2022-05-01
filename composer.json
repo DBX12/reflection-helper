@@ -20,6 +20,11 @@
             "dbx12\\reflectionHelper\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "tests\\": "tests"
+        }
+    },
     "config": {
         "sort-packages": true
     }
